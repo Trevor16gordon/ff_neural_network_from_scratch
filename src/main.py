@@ -50,11 +50,23 @@ class FeedForwardNeuralNetwork():
         biases_2 = np.random.randn(len_output, 1)/5
         return weights_1, biases_1, weights_2, biases_2
 
+    def update_network_states(self):
+        """Using weights, biases and activation function, calculate hidden layer and output
+
+        Returns:
+            h1 (np.array): Hidden layer with shape = (len_hidden, num_observations)
+            z1 (np.array): Activated hidden layer with shape = (len_hidden, num_observations)
+            h2 (np.array): Hidden layer 2 with shape = (len_output, num_observations)
+            yhat (np.array): Output layer with shape = (len_output, num_observations)
+        """
+        h1 = np.dot(self.W1, self.X.T) + self.c1
+        z1 = self.f1(h1)
+        h2 = np.dot(self.W2, z1) + self.c2
+        yhat = self.f1(h2)
+        return h1, z1, h2, yhat
 
     def fit(self, X, y, len_hidden, grad_step=1e-5, n_iter=1e3, seed=None):
         """Fit a feedforward neural network to the test set given.
-
-        
 
         Args:
             X (np.array): Input data with columns for elements of a single input
@@ -68,6 +80,7 @@ class FeedForwardNeuralNetwork():
         len_output = y.shape[1]
         num_observations = len(X)
         self.W1, self.c1, self.W2, self.c2 = self.initialize_params(len_input, len_hidden, len_output)
+        self.h1, self.z1, self.h2, self.yhat = self.update_network_states()
 
         for i in n_iter:
             # Adjust weights and biases in the direction of the negative gradient of the loss function
@@ -79,7 +92,7 @@ class FeedForwardNeuralNetwork():
             self.c1 -= grad_step * dL_dc1
             self.c2 -= grad_step * dL_dc2
 
-            self.update_network_internal_states()
+            self.h1, self.z1, self.h2, self.yhat = self.update_network_states()
         return True
 
     def predict(self, X_predict):
