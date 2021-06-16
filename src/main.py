@@ -1,4 +1,5 @@
-    """Trevor Gordon. 2021
+# %%
+"""Trevor Gordon. 2021
     Implementation of a feed forward neural network from scratch.
 
     Drawing largely from https://dafriedman97.github.io/mlbook/content/c7/concept.html
@@ -6,6 +7,8 @@
     """
 
 import numpy as np
+import tqdm
+
 
 class FeedForwardNeuralNetwork():
     """Feed Forward Neural Network
@@ -219,7 +222,7 @@ class FeedForwardNeuralNetwork():
         # Reshaping with -1 make sure theres a second dim of at least 1
         self.y = y.reshape(len(y), -1)
         len_input = X.shape[1]
-        len_output = y.shape[1]
+        len_output = self.y.shape[1]
         self.W1, self.c1, self.W2, self.c2 = self.initialize_params(
             len_input, len_hidden, len_output)
         self.h1, self.z1, self.h2, self.yhat = self.update_network_states()
@@ -242,9 +245,12 @@ class FeedForwardNeuralNetwork():
 
         Args:
             X_predict (np.array): Input data with columns for elements of a single input. 
-            and rows for each prediction. X.shape = (num_to_predict, data_per_observation)
+            and  rows for each prediction. X.shape = (num_to_predict, data_per_observation)
+
 
         Returns:
             np.array: Predictions. y.shape = (data_per_output, num_to_predict)
         """
-        return y_predict
+        self.X = X_predict
+        h1, z1, h2, yhat = self.update_network_states()
+        return yhat
